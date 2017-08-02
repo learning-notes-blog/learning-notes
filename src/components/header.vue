@@ -24,8 +24,10 @@ export default {
 }
 </script>
 
-<style scoped>
-	.fr{
-		float:right;
+<style lang="scss" scoped>
+	.header{	
+		.fr{
+			float:right;
+		}
 	}
 </style>
