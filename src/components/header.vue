@@ -18,7 +18,7 @@ export default {
  	},
  	methods:{
  		handleSelect(key,keypath){
- 			console.log(key, keypath)
+ 			this.$router.push({path:key})
  		}
  	}
 }

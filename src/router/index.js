@@ -13,6 +13,10 @@ export default new Router({
 			component: Add
 		},
 		{
+			path: '/add',
+			component: Add
+		},
+		{
 			path: '/list',
 			component: List
 		}

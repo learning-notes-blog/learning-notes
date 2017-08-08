@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const bcrypt = require('bcrypt')
+const saltRounds = 10;
 
 const ArticalSchema = new Schema({
 	title:String,
@@ -30,5 +32,11 @@ ArticalSchema.pre('update',function(next){
 	this.meta.updated = Date.now()
 	next()
 })
+
+ArticalSchema.static = {
+	findByTitle:function(title,cb){
+		this.findOne({title:title}).exec(cb)
+	}
+}
 
 module.exports = ArticalSchema

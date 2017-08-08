@@ -11,28 +11,53 @@ app.listen(port)
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true ,limit:1000000}))
 
-app.get('/api/add/artical',function(req,res){
-	//const title = req.body.title.replace(/</g,'&lt;')
-	//const content = req.body.content.replace(/</g,'&lt;')
+app.post('/api/add/artical',function(req,res){
+	let title = req.body.title
+	let content = req.body.content
+	const user = req.body.user || 'mdh'
+	const regExp = /<|>/g
+	function replace(str){
+		if(str == '<'){
+			return '&lt;'
+		}else if(str == '>'){
+			return '&gt;'
+		}
+	}
+	if(!title){
+		return res.send({msg:'title is required',code:1})
+	}
+	if(!content){
+		return res.send({msg:'content is required',code:1})
+	}
 
-	const artical = new ArticalModel({
-		title:"aaa",
-		content:'bbb',
-		user:'cccc'
+	title = title.replace(regExp, replace)
+	content = content.replace(regExp, replace)
+	ArticalModel.findByTitle(title,function(err,art){
+		if(err){
+			return res.send({msg:err,code:1})
+		}
+
+		if(art){
+			return res.send({msg:'文章标题已存在',code: 1})
+		}
+
+		new ArticalModel({
+			title: title,
+			content: content,
+			user: user
+		}).save().then(function(art){
+			console.log(art)
+			res.send({msg:'ok',code:0})
+		}).catch(function(err){
+			console.log(err)
+			res.send({msg:err, code:1})
+		})
 	})
-
-	artical.save().then(function(art){
-		console.log(art)
-		res.send('ok')
-	}).catch(function(err){
-		console.log(err)
-	})
-
 })
 
-app.get('/api/update/artical',function(req,res){
-	//const title = req.body.title.replace(/</g,'&lt;')
-	//const content = req.body.content.replace(/</g,'&lt;')
+app.post('/api/update/artical',function(req,res){
+	const title = req.body.title.replace(/</g,'&lt;')
+	const content = req.body.content.replace(/</g,'&lt;')
 
 	ArticalModel.findOne({title:"aaa"}).then(function(art){
 		if(art){
