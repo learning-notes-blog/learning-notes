@@ -1,12 +1,11 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const bcrypt = require('bcrypt')
-const saltRounds = 10;
+const saltRounds = 10
 
 const ArticalSchema = new Schema({
 	title:String,
 	content: String,
-	user:String,
 	meta:{
 		created:{
 			type:Number,

@@ -11,10 +11,10 @@ app.listen(port)
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true ,limit:1000000}))
 
-app.post('/api/add/artical',function(req,res){
+//文章保存
+app.post('/api/add/artical',(req,res) => {
 	let title = req.body.title
 	let content = req.body.content
-	const user = req.body.user || 'mdh'
 	const regExp = /<|>/g
 	function replace(str){
 		if(str == '<'){
@@ -32,7 +32,7 @@ app.post('/api/add/artical',function(req,res){
 
 	title = title.replace(regExp, replace)
 	content = content.replace(regExp, replace)
-	ArticalModel.findByTitle(title,function(err,art){
+	ArticalModel.findByTitle(title,(err,art) => {
 		if(err){
 			return res.send({msg:err,code:1})
 		}
@@ -43,38 +43,55 @@ app.post('/api/add/artical',function(req,res){
 
 		new ArticalModel({
 			title: title,
-			content: content,
-			user: user
-		}).save().then(function(art){
+			content: content
+		}).save().then((art) => {
 			console.log(art)
 			res.send({msg:'ok',code:0})
-		}).catch(function(err){
+		}).catch((err) =>{
 			console.log(err)
 			res.send({msg:err, code:1})
 		})
 	})
 })
 
-app.post('/api/update/artical',function(req,res){
+
+//文章跟新
+app.post('/api/update/artical',(req,res) => {
 	const title = req.body.title.replace(/</g,'&lt;')
 	const content = req.body.content.replace(/</g,'&lt;')
 
-	ArticalModel.findOne({title:"aaa"}).then(function(art){
+	ArticalModel.findOne({title:"aaa"}).then((art) => {
 		if(art){
 			art.update({
 				title:"aaa2",
-				content:'bbb2',
-				user:'mdh'
-			}).then(function(raw,art){
+				content:'bbb2'
+			}).then((raw,art) =>{
 				console.log(raw,art)
 				res.send({msg:'更新成功',code:0})
-			}).catch(function(err){
+			}).catch((err) => {
 				console.log('err'+err)
 			})
 		}else{
 			res.send({msg:'没有这篇文章，无法更新',code:1})
 		}
-	}).catch(function(err){
+	}).catch((err) => {
+		console.log(err)
+	})
+})
+
+//文章列表
+app.get('/api/list',(req,res)=>{
+	ArticalModel.find().then((arts)=>{
+		res.send({msg:'ok',code:0,data:arts})
+	})
+})
+
+//文章详情
+app.get('/api/detail/:id',(req,res)=>{
+	const id = req.params.id
+	ArticalModel.findOne({_id:id}).then((art)=>{
+		res.send({msg:'ok',code:0,data:art})
+	}).catch((err) => {
 		console.log(err)
 	})
 })

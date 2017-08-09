@@ -60,7 +60,7 @@ export default {
     		axios.post('/api/add/artical',{
     			title: title,
     			content: render
-    		}).then(function(res){
+    		}).then((res) => {
     			console.log(res.data)
     			const data = res.data.data
     			if(data.code !== 0 ){
@@ -82,7 +82,7 @@ export default {
                     }
                 })
     			
-    		}).catch(function(err){
+    		}).catch((err) => {
     			this.$message({
                     type:'error',
                     message: err,

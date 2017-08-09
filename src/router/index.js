@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Add from '@/components/add'
 import List from '@/components/list'
+import Detail from '@/components/detail'
 
 Vue.use(Router)
 
@@ -19,6 +20,10 @@ export default new Router({
 		{
 			path: '/list',
 			component: List
+		},
+		{
+			path: '/detail',
+			component: Detail
 		}
 	]
 })
