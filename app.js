@@ -11,10 +11,9 @@ app.listen(port)
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true ,limit:1000000}))
 
-//文章保存
-app.post('/api/add/artical',(req,res) => {
-	let title = req.body.title
-	let content = req.body.content
+function checkArtical(req,res,next){
+	const title = req.body.title
+	const content = req.body.content
 	const regExp = /<|>/g
 	function replace(str){
 		if(str == '<'){
@@ -23,6 +22,10 @@ app.post('/api/add/artical',(req,res) => {
 			return '&gt;'
 		}
 	}
+
+	req.body.title = title.trim().replace(regExp, replace)
+	req.body.content = content.trim()
+	
 	if(!title){
 		return res.send({msg:'title is required',code:1})
 	}
@@ -30,8 +33,14 @@ app.post('/api/add/artical',(req,res) => {
 		return res.send({msg:'content is required',code:1})
 	}
 
-	title = title.replace(regExp, replace)
-	content = content.replace(regExp, replace)
+	next()
+}
+
+//文章保存
+app.post('/api/add/artical', checkArtical, (req,res) => {
+	const title = req.body.title
+	const content = req.body.content
+
 	ArticalModel.findByTitle(title,(err,art) => {
 		if(err){
 			return res.send({msg:err,code:1})
@@ -45,10 +54,8 @@ app.post('/api/add/artical',(req,res) => {
 			title: title,
 			content: content
 		}).save().then((art) => {
-			console.log(art)
-			res.send({msg:'ok',code:0})
+			res.send({msg:'ok',code:0,id:art._id})
 		}).catch((err) =>{
-			console.log(err)
 			res.send({msg:err, code:1})
 		})
 	})
@@ -56,26 +63,25 @@ app.post('/api/add/artical',(req,res) => {
 
 
 //文章跟新
-app.post('/api/update/artical',(req,res) => {
-	const title = req.body.title.replace(/</g,'&lt;')
-	const content = req.body.content.replace(/</g,'&lt;')
+app.post('/api/update/artical', checkArtical, (req,res) => {
+	const title = req.body.title
+	const content = req.body.content
 
-	ArticalModel.findOne({title:"aaa"}).then((art) => {
+	ArticalModel.findOne({title:title}).then((art) => {
 		if(art){
 			art.update({
-				title:"aaa2",
-				content:'bbb2'
+				title: title,
+				content: content
 			}).then((raw,art) =>{
-				console.log(raw,art)
 				res.send({msg:'更新成功',code:0})
 			}).catch((err) => {
-				console.log('err'+err)
+				res.send({msg:err,code:1})
 			})
 		}else{
 			res.send({msg:'没有这篇文章，无法更新',code:1})
 		}
 	}).catch((err) => {
-		console.log(err)
+		res.send({msg:err,code:1})
 	})
 })
 
@@ -92,6 +98,16 @@ app.get('/api/detail/:id',(req,res)=>{
 	ArticalModel.findOne({_id:id}).then((art)=>{
 		res.send({msg:'ok',code:0,data:art})
 	}).catch((err) => {
-		console.log(err)
+		res.send({msg:err,code:1})
+	})
+})
+
+//文章删除
+app.get('/api/delete/:id',(req,res)=>{
+	const id = req.params.id
+	ArticalModel.remove({_id:id}).then(()=>{
+		res.send({msg:'ok',code:0})
+	}).catch((err) => {
+		res.send({msg:err,code:1})
 	})
 })

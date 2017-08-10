@@ -60,16 +60,16 @@ export default {
     		axios.post('/api/add/artical',{
     			title: title,
     			content: render
-    		}).then((res) => {
-    			console.log(res.data)
-    			const data = res.data.data
-    			if(data.code !== 0 ){
+    		}).then((data) => {
+                const res = data.data
+    			if(res.code !== 0 ){
                     this.$message({
                         type:'error',
-                        message:'保存失败，修改后，请重新尝试',
+                        message: data.msg,
                         showClose: false,
                         duration: 2000
                     })
+                    return
                 }
     			this.$message({
                     type:'success',

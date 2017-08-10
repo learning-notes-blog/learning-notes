@@ -6,6 +6,10 @@ const saltRounds = 10
 const ArticalSchema = new Schema({
 	title:String,
 	content: String,
+	user:{
+		type:String,
+		default:''
+	},
 	meta:{
 		created:{
 			type:Number,
@@ -32,10 +36,8 @@ ArticalSchema.pre('update',function(next){
 	next()
 })
 
-ArticalSchema.static = {
-	findByTitle:function(title,cb){
-		this.findOne({title:title}).exec(cb)
-	}
-}
+ArticalSchema.static("findByTitle",function(title, cb){
+	return this.findOne({title:title}).exec(cb)
+})
 
 module.exports = ArticalSchema
