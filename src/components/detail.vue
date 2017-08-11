@@ -14,13 +14,6 @@ export default {
 			content:""
 		}
 	},
-	computed:{
-		scale(index){
-			return ()=>{
-				return this.tableDate[index].点击/ this.tableData[index].激活
-			}
-		}
-	},
 	created(){
 		const id = this.$route.query.id
 		axios.get('/api/detail/'+id).then((data)=>{

@@ -12,8 +12,9 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true ,limit:1000000}))
 
 function checkArtical(req,res,next){
+	console.log('adsf')
 	const title = req.body.title
-	const content = req.body.content
+	const render = req.body.render
 	const regExp = /<|>/g
 	function replace(str){
 		if(str == '<'){
@@ -24,7 +25,7 @@ function checkArtical(req,res,next){
 	}
 
 	req.body.title = title.trim().replace(regExp, replace)
-	req.body.content = content.trim()
+	req.body.render = render.trim()
 	
 	if(!title){
 		return res.send({msg:'title is required',code:1})
@@ -39,7 +40,8 @@ function checkArtical(req,res,next){
 //文章保存
 app.post('/api/add/artical', checkArtical, (req,res) => {
 	const title = req.body.title
-	const content = req.body.content
+	const render = req.body.render
+	const value = req.body.value
 
 	ArticalModel.findByTitle(title,(err,art) => {
 		if(err){
@@ -52,7 +54,8 @@ app.post('/api/add/artical', checkArtical, (req,res) => {
 
 		new ArticalModel({
 			title: title,
-			content: content
+			content: content,
+			value: value
 		}).save().then((art) => {
 			res.send({msg:'ok',code:0,id:art._id})
 		}).catch((err) =>{
@@ -65,13 +68,15 @@ app.post('/api/add/artical', checkArtical, (req,res) => {
 //文章跟新
 app.post('/api/update/artical', checkArtical, (req,res) => {
 	const title = req.body.title
-	const content = req.body.content
+	const render = req.body.render
+	const value = req.body.value
 
 	ArticalModel.findOne({title:title}).then((art) => {
 		if(art){
 			art.update({
 				title: title,
-				content: content
+				render: render,
+				value: value
 			}).then((raw,art) =>{
 				res.send({msg:'更新成功',code:0})
 			}).catch((err) => {
