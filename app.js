@@ -116,3 +116,8 @@ app.get('/api/delete/:id',(req,res)=>{
 		res.send({msg:err,code:1})
 	})
 })
+
+//图片上传
+app.post('/api/upload', (req,res)=>{
+
+})
